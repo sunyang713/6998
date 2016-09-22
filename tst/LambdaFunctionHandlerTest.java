@@ -8,6 +8,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 
+import coms6998.fall2016.lambdaFunctions.LambdaFunctionHandler;
+
 /**
  * A simple test harness for locally invoking your Lambda function handler.
  */
