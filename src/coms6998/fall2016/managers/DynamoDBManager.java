@@ -39,12 +39,13 @@ public class DynamoDBManager {
 		return false;
 	}
 	
-	public boolean createCustomer(Customer customer){
+	public boolean create(Customer customer){
 		if (mapper.load(customer) == null) {
 			//save it to the db
 			mapper.save(customer);
 			return true;
 		}
+		System.err.println("Customer already exists.");
 		return false;
 	}
 
