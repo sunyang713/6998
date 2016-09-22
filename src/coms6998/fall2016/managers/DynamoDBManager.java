@@ -29,15 +29,13 @@ public class DynamoDBManager {
 	
 	public DynamoDBManager() {
 		dynamoDBClient = new AmazonDynamoDBClient();
-		dynamoDBClient.setRegion(Region.getRegion(Regions.US_WEST_2));
+		dynamoDBClient.setRegion(Region.getRegion(Regions.US_EAST_1));
 		mapper = new DynamoDBMapper(dynamoDBClient);
 	    dynamoDB = new DynamoDB(dynamoDBClient);
 	    customerTable = dynamoDB.getTable(CUSTOMER_TABLE);
 	}
 	
-	public boolean deleteCustomerUsingMapper(String email){
-		Customer emailKey = new Customer();
-		emailKey.setEmail(email);
+	public boolean deleteCustomerUsingMapper(Customer emailKey){
 		Customer customerToDelete = mapper.load(emailKey);
 		if(customerToDelete != null) {
 			customerToDelete.setDeleted(true);
