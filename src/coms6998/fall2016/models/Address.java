@@ -2,6 +2,7 @@ package coms6998.fall2016.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBNativeBoolean;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 @DynamoDBTable(tableName="Addresses")
@@ -12,6 +13,7 @@ public class Address {
 	private String street;
 	private String number;
 	private String zipCode;
+	private boolean isDeleted;
 	
 	@DynamoDBHashKey(attributeName="UUID")
 	public String getUuid() {
@@ -53,6 +55,14 @@ public class Address {
 		this.zipCode = zipCode;
 	}
 	
-	
+	@DynamoDBNativeBoolean
+	@DynamoDBAttribute(attributeName="isDeleted")
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 
 }

@@ -12,7 +12,7 @@ public class DeleteCustomerLambdaFunctionHandler implements RequestHandler<Custo
     @Override
     public String handleRequest(Customer customer, Context context) {
         context.getLogger().log("Deleting customer with email: " + customer.getEmail());
-        boolean rval = (new DynamoDBManager()).deleteCustomerUsingMapper(customer);
+        boolean rval = (new DynamoDBManager()).deleteCustomer(customer);
         if(rval) {
         	return "{\"message\":\"Customer with email: " + customer.getEmail() + " deleted.\"}";
         } else {
