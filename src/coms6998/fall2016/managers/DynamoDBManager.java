@@ -38,5 +38,14 @@ public class DynamoDBManager {
 		}
 		return false;
 	}
+	
+	public boolean createCustomer(Customer customer){
+		if (mapper.load(customer) == null) {
+			//save it to the db
+			mapper.save(customer);
+			return true;
+		}
+		return false;
+	}
 
 }
