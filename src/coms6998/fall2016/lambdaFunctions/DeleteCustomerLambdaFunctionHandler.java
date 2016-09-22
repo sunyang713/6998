@@ -1,31 +1,22 @@
 package coms6998.fall2016.lambdaFunctions;
 
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import coms6998.fall2016.models.Customer;
+import coms6998.fall2016.managers.DynamoDBManager;
 
-public class DeleteCustomerLambdaFunctionHandler implements RequestHandler<Customer, String> {
-
-    static AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(new BasicAWSCredentials("AKIAIYM2CT2BA3SAR3TA", "z2eGDpVsW0B/b5N5eoi/FNqp+NqqOr6s06vmvNlR"));
+public class DeleteCustomerLambdaFunctionHandler implements RequestHandler<String, String> {
 	
     @Override
-    public String handleRequest(Customer input, Context context) {
-        context.getLogger().log("Input is very much: " + input);
-//        dynamoDBClient.setEndpoint("https://dynamodb.us-west-2.amazonaws.com");
-//        DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
-//        Table customerTable = dynamoDB.getTable("customer");
-//        context.getLogger().log("Customer Table Description: " + customerTable.getTableName());
-//
-//        Item item = new Item().withPrimaryKey("email", "test@gmail.com");
-//        
-//        customerTable.putItem(item);
-       
-       
-        return "{\"message\":\"Hello from delete function " + input.getFirstName() + "!, how are you?\"}";
+    public String handleRequest(String email, Context context) {
+        context.getLogger().log("Deleting customer with email: " + email);
+        boolean rval = (new DynamoDBManager()).deleteCustomerUsingMapper(email);
+        if(rval) {
+        	return "{\"message\":\"Customer with email: " + email + " deleted.\"}";
+        } else {
+        	return "{\"message\":\"Failed to delete Customer with email: " + email + ".\"}";
+        }
     }
 
 }

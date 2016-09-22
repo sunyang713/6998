@@ -1,4 +1,11 @@
 package coms6998.fall2016.models;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBNativeBoolean;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+
+@DynamoDBTable(tableName="customer")
 public class Customer {
 	
 	private String email;
@@ -8,7 +15,12 @@ public class Customer {
 	private String lastName;
 	
 	private String phoneNumber;
+	
+	private String addressRef;
+	
+	private boolean isDeleted;
 
+	@DynamoDBHashKey(attributeName="email")
 	public String getEmail() {
 		return email;
 	}
@@ -17,6 +29,7 @@ public class Customer {
 		this.email = email;
 	}
 
+	@DynamoDBAttribute(attributeName="firstName")
 	public String getFirstName() {
 		return firstName;
 	}
@@ -25,6 +38,7 @@ public class Customer {
 		this.firstName = firstName;
 	}
 
+	@DynamoDBAttribute(attributeName="lastName")
 	public String getLastName() {
 		return lastName;
 	}
@@ -33,6 +47,7 @@ public class Customer {
 		this.lastName = lastName;
 	}
 
+	@DynamoDBAttribute(attributeName="phoneNumber")
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -41,4 +56,24 @@ public class Customer {
 		this.phoneNumber = phoneNumber;
 	}
 
+	@DynamoDBAttribute(attributeName="addressRef")
+	public String getAddressRef() {
+		return addressRef;
+	}
+
+	public void setAddressRef(String addressRef) {
+		this.addressRef = addressRef;
+	}
+
+	@DynamoDBNativeBoolean
+	@DynamoDBAttribute(attributeName="isDeleted")
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	
 }
