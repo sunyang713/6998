@@ -5,17 +5,18 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import coms6998.fall2016.managers.DynamoDBManager;
+import coms6998.fall2016.models.Customer;
 
-public class DeleteCustomerLambdaFunctionHandler implements RequestHandler<String, String> {
+public class DeleteCustomerLambdaFunctionHandler implements RequestHandler<Customer, String> {
 	
     @Override
-    public String handleRequest(String email, Context context) {
-        context.getLogger().log("Deleting customer with email: " + email);
-        boolean rval = (new DynamoDBManager()).deleteCustomerUsingMapper(email);
+    public String handleRequest(Customer customer, Context context) {
+        context.getLogger().log("Deleting customer with email: " + customer.getEmail());
+        boolean rval = (new DynamoDBManager()).deleteCustomerUsingMapper(customer);
         if(rval) {
-        	return "{\"message\":\"Customer with email: " + email + " deleted.\"}";
+        	return "{\"message\":\"Customer with email: " + customer.getEmail() + " deleted.\"}";
         } else {
-        	return "{\"message\":\"Failed to delete Customer with email: " + email + ".\"}";
+        	return "{\"message\":\"Failed to delete Customer with email: " + customer.getEmail() + ".\"}";
         }
     }
 

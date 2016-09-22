@@ -5,7 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBNativeBoolean;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
-@DynamoDBTable(tableName="customer")
+@DynamoDBTable(tableName="Customers")
 public class Customer {
 	
 	private String email;
@@ -20,7 +20,7 @@ public class Customer {
 	
 	private boolean isDeleted;
 
-	@DynamoDBHashKey(attributeName="email")
+	@DynamoDBHashKey(attributeName="Email")
 	public String getEmail() {
 		return email;
 	}
