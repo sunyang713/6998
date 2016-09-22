@@ -57,7 +57,7 @@ public class DynamoDBManager implements DBManager{
 		String uniqueAddr = address.getNumber() + address.getStreet() + address.getCity();
 		String hash = md5(uniqueAddr);
 		if (mapper.load(address.getClass(), hash) == null) {
-			address.setUuid(hash);
+			address.setUuid(hash); 
 			mapper.save(address);
 			return DBReturnCode.Success;
 		}
@@ -81,5 +81,15 @@ public class DynamoDBManager implements DBManager{
 
 	}
 	
+	public DBReturnCode updateCustomer(Customer customerData) {
+		Customer customer = mapper.load(customerData);
+		if(customer == null || customer.isDeleted()) {
+			return DBReturnCode.NotFound;
+		} else {
+			mapper.save(customerData);
+			return DBReturnCode.Success;
+		}
+	}
+
 
 }
