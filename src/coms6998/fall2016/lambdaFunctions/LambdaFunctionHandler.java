@@ -1,3 +1,4 @@
+package coms6998.fall2016.lambdaFunctions;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
