@@ -16,6 +16,10 @@ public class DeleteAddressLambdaFunctionHandler implements RequestHandler<Addres
     @Override
     public String handleRequest(Address address, Context context) {
         context.getLogger().log("Deleting address with UUID: " + address.getUuid());
+        if(address.getUuid()== null || address.getUuid().isEmpty()) {
+        	ErrorPayload errorPayload = new ErrorPayload("BadRequest", 422, context.getAwsRequestId(), "No UUID provided");
+        	throw new RuntimeException(errorPayload.toString());
+        }
         DBReturnCode rc = dbManager.deleteAddress(address);
         if(rc.equals(DBReturnCode.Success)) {
         	return "{\"message\":\"Address with UUID: " + address.getUuid() + " deleted.\"}";
