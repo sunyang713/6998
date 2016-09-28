@@ -8,7 +8,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import coms6998.fall2016.models.Address;
 import coms6998.fall2016.models.Customer;
 
-public class DynamoDBManager {
+public class DynamoDBManager implements DBManager{
 	
 	private AmazonDynamoDBClient dynamoDBClient;
 	private DynamoDBMapper mapper;
