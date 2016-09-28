@@ -10,8 +10,16 @@ public interface DBManager {
 	
 	public DBReturnCode deleteAddress(Address address);
 	
-	public DBReturnCode create(Customer customer);
-	
+	public DBReturnCode create(Customer customer);	
+
 	public DBReturnCode create(Address address);
+
+	public DBReturnCode getCus(Customer customer);
+	
+	public DBReturnCode getAdd(Address address);
+	
+	public Customer getCustomer(String emailKey);
+	
+	public Address getAddress(String address);
 
 }
