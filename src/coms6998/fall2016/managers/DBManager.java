@@ -2,13 +2,14 @@ package coms6998.fall2016.managers;
 
 import coms6998.fall2016.models.Address;
 import coms6998.fall2016.models.Customer;
+import coms6998.fall2016.models.DBReturnCode;
 
 public interface DBManager {
 	
-	public boolean deleteCustomer(Customer emailKey);
+	public DBReturnCode deleteCustomer(Customer emailKey);
 	
-	public boolean deleteAddress(Address address);
+	public DBReturnCode deleteAddress(Address address);
 	
-	public boolean create(Customer customer);
+	public DBReturnCode create(Customer customer);
 
 }

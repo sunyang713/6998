@@ -1,5 +1,8 @@
 package coms6998.fall2016.models;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class ErrorPayload {
 	
 	private String errorType;
@@ -47,5 +50,14 @@ public class ErrorPayload {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	
+	public String toString() {
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 }

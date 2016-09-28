@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 import coms6998.fall2016.models.Address;
 import coms6998.fall2016.models.Customer;
+import coms6998.fall2016.models.DBReturnCode;
 
 public class DynamoDBManager implements DBManager{
 	
@@ -19,34 +20,34 @@ public class DynamoDBManager implements DBManager{
 		mapper = new DynamoDBMapper(dynamoDBClient);
 	}
 	
-	public boolean deleteCustomer(Customer emailKey){
+	public DBReturnCode deleteCustomer(Customer emailKey){
 		Customer customerToDelete = mapper.load(emailKey);
 		if(customerToDelete != null) {
 			customerToDelete.setDeleted(true);
 			mapper.save(customerToDelete);
-			return true;
+			return DBReturnCode.Success;
 		}
-		return false;
+		return DBReturnCode.NotFound;
 	}
 	
-	public boolean deleteAddress(Address address){
+	public DBReturnCode deleteAddress(Address address){
 		Address addressToDelete = mapper.load(address);
 		if(addressToDelete != null) {
 			addressToDelete.setDeleted(true);
 			mapper.save(addressToDelete);
-			return true;
+			return DBReturnCode.Success;
 		}
-		return false;
+		return DBReturnCode.NotFound;
 	}
 	
-	public boolean create(Customer customer){
+	public DBReturnCode create(Customer customer){
 		if (mapper.load(customer) == null) {
 			//save it to the db
 			mapper.save(customer);
-			return true;
+			return DBReturnCode.Success;
 		}
 		System.err.println("Customer already exists.");
-		return false;
+		return DBReturnCode.AlreadyExists;
 	}
 
 }
