@@ -17,6 +17,10 @@ public class DeleteCustomerLambdaFunctionHandler implements RequestHandler<Custo
     @Override
     public String handleRequest(Customer customer, Context context) {
         context.getLogger().log("Deleting customer with email: " + customer.getEmail());
+        if(customer.getEmail() == null || customer.getEmail().isEmpty()) {
+        	ErrorPayload errorPayload = new ErrorPayload("BadRequest", 422, context.getAwsRequestId(), "No email provided");
+        	throw new RuntimeException(errorPayload.toString());
+        }
         ValidationManager validationManager = new ValidationManager(context);
         if(validationManager.isValidEmail(customer.getEmail())) {
 	        DBReturnCode rc = dbManager.deleteCustomer(customer);
