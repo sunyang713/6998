@@ -7,7 +7,8 @@ import coms6998.fall2016.managers.DBManager;
 import coms6998.fall2016.managers.DynamoDBManager;
 import coms6998.fall2016.managers.ValidationManager;
 import coms6998.fall2016.models.Customer;
-import coms6998.fall2016.models.Response;
+import coms6998.fall2016.models.DBReturnCode;
+import coms6998.fall2016.models.ErrorPayload;
 
 public class CreateCustomerLambdaFunctionHandler implements RequestHandler<Customer, String> {
 	
@@ -17,15 +18,21 @@ public class CreateCustomerLambdaFunctionHandler implements RequestHandler<Custo
     public String handleRequest(Customer input, Context context) {
         context.getLogger().log("Input: " + input);
         ValidationManager vm = new ValidationManager(context);
-        
-        boolean success = vm.isValidCustomer(input) && dbManager.create(input);
-
-        if(success) {
-        	//return customer
-        	return "{\"message\":\"Customer with email: " + input.getEmail() + " created.\"}";
+        if(vm.isValidCustomer(input)){
+	        DBReturnCode rc = dbManager.create(input);
+	        if(rc.equals(DBReturnCode.Success)) {
+	        	//return customer
+	        	return "{\"message\":\"Customer with email: " + input.getEmail() + " created.\"}";
+	        } else if (rc.equals(DBReturnCode.AlreadyExists)){
+	        	ErrorPayload errorPayload = new ErrorPayload("BadRequest", 422, context.getAwsRequestId(), "Customer with provided email already exists: " + input.getEmail() + ".");
+	        	throw new RuntimeException(errorPayload.toString());
+	        } else {
+	        	ErrorPayload errorPayload = new ErrorPayload("Error", 500, context.getAwsRequestId(), "Unknown Internal Error");
+	        	throw new RuntimeException(errorPayload.toString());
+	        }
         } else {
-        	//throw runtime exception error w error model object
-        	return "{\"message\":\"Failed to create Customer with email: " + input.getEmail() + ".\"}";
+        	ErrorPayload errorPayload = new ErrorPayload("BadRequest", 422, context.getAwsRequestId(), "Invalid input provided: " + input.toString());
+        	throw new RuntimeException(errorPayload.toString());
         }
     }
 
