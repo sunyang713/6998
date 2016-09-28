@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import com.amazonaws.services.lambda.runtime.Context;
 
 import coms6998.fall2016.models.Customer;
+import coms6998.fall2016.models.Address;
 
 public class ValidationManager {
 	private Context context;
@@ -34,10 +35,11 @@ public class ValidationManager {
         return isValid;
 	}
 	
-	public boolean isValidName(String name){
-		boolean isValid = name.chars().allMatch(x -> Character.isLetter(x));
+	public boolean isLettersOnly(String input){
+		String cleaned = input.replaceAll("\\s+","");
+		boolean isValid = cleaned.chars().allMatch(x -> Character.isLetter(x));
 		if (!isValid) {
-			context.getLogger().log("Invalid first or last name!");
+			context.getLogger().log("Invalid letters-only entry!");
 		}
 		return isValid;
 	}
@@ -51,11 +53,27 @@ public class ValidationManager {
 		return isValid;
 	}
 	
+	public boolean isValidZipCode(String zc){
+		boolean isDigits = zc.chars().allMatch(x -> Character.isDigit(x));
+		boolean isValid = isDigits && (zc.length() == 5);
+		if (!isValid){
+			context.getLogger().log("Invalid zip code!");
+		}
+		return isValid;
+	}
+	
 	public boolean isValidCustomer(Customer customer){
         return isValidEmail(customer.getEmail()) && 
-        		isValidName(customer.getFirstName()) &&
-        		isValidName(customer.getLastName()) &&
+        		isLettersOnly(customer.getFirstName()) &&
+        		isLettersOnly(customer.getLastName()) &&
         		isValidPhoneNumber(customer.getPhoneNumber());
+	}
+	
+	public boolean isValidAddress(Address address){
+		return isValidZipCode(address.getZipCode()) && 
+				isLettersOnly(address.getCity()) && 
+				isLettersOnly(address.getState());
+		
 	}
 
 

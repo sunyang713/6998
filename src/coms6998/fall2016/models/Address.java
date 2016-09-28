@@ -9,9 +9,10 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 public class Address {
 	
 	private String uuid;
-	private String city;
-	private String street;
 	private String number;
+	private String street;
+	private String city;
+	private String state;
 	private String zipCode;
 	private boolean isDeleted;
 	
@@ -23,12 +24,12 @@ public class Address {
 		this.uuid = uuid;
 	}
 	
-	@DynamoDBAttribute(attributeName="city")
-	public String getCity() {
-		return city;
+	@DynamoDBAttribute(attributeName="number")
+	public String getNumber() {
+		return number;
 	}
-	public void setCity(String city) {
-		this.city = city;
+	public void setNumber(String number) {
+		this.number = number;
 	}
 	
 	@DynamoDBAttribute(attributeName="street")
@@ -39,12 +40,20 @@ public class Address {
 		this.street = street;
 	}
 	
-	@DynamoDBAttribute(attributeName="number")
-	public String getNumber() {
-		return number;
+	@DynamoDBAttribute(attributeName="city")
+	public String getCity() {
+		return city;
 	}
-	public void setNumber(String number) {
-		this.number = number;
+	public void setCity(String city) {
+		this.city = city;
+	}
+	
+	@DynamoDBAttribute(attributeName="state")
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
 	}
 	
 	@DynamoDBAttribute(attributeName="zipCode")
@@ -64,5 +73,7 @@ public class Address {
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
+	
+
 
 }
