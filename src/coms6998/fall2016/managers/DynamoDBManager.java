@@ -1,5 +1,8 @@
 package coms6998.fall2016.managers;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
@@ -42,12 +45,41 @@ public class DynamoDBManager implements DBManager{
 	
 	public DBReturnCode create(Customer customer){
 		if (mapper.load(customer) == null) {
-			//save it to the db
 			mapper.save(customer);
 			return DBReturnCode.Success;
 		}
 		System.err.println("Customer already exists.");
 		return DBReturnCode.AlreadyExists;
 	}
+	
+	public DBReturnCode create(Address address){
+		//check if an address exists first with that UUID and if it doesn't, generate it
+		String uniqueAddr = address.getNumber() + address.getStreet() + address.getCity();
+		String hash = md5(uniqueAddr);
+		if (mapper.load(address.getClass(), hash) == null) {
+			address.setUuid(hash);
+			mapper.save(address);
+			return DBReturnCode.Success;
+		}
+		System.err.println("Address already exists.");
+		return DBReturnCode.AlreadyExists;
+	}
+	
+	//http://stackoverflow.com/questions/415953/how-can-i-generate-an-md5-hash
+	private static String md5(String input) {
+	    try {
+	        java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+	        byte[] array = md.digest(input.getBytes( "UTF-8" ));
+	        StringBuffer sb = new StringBuffer();
+	        for (int i = 0; i < array.length; i++) {
+	            sb.append( String.format( "%02x", array[i]));
+	        }
+	        return sb.toString();
+	    } catch ( NoSuchAlgorithmException | UnsupportedEncodingException e) {
+	        return null;            
+	    }
+
+	}
+	
 
 }

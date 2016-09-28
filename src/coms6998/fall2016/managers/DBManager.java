@@ -11,5 +11,7 @@ public interface DBManager {
 	public DBReturnCode deleteAddress(Address address);
 	
 	public DBReturnCode create(Customer customer);
+	
+	public DBReturnCode create(Address address);
 
 }
