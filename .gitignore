@@ -49,3 +49,6 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+/com.amazonaws.eclipse.lambda.project
+/org.eclipse.jdt.core.prefs
+/.DS_Store
