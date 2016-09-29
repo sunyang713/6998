@@ -25,7 +25,7 @@ public class UpdateAddressLambdaFunctionHandler implements RequestHandler<Addres
         ValidationManager vm = new ValidationManager(context);
     	String message;
 
-    	// Validate city if exists
+    	// Validate city if exists - letters only
     	if (addressInput.getCity() != null && !addressInput.getCity().equals("")) {
     		if (!vm.isLettersOnly(addressInput.getCity())) {
     			message = "Invalid city provided: " + addressInput.toString();

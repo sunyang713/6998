@@ -123,6 +123,9 @@ public class DynamoDBManager implements DBManager{
 			if (addressData.getZipCode() == null || addressData.getZipCode().equals("")) {
 				addressData.setZipCode(oldAddr.getZipCode());
 			}
+			if (addressData.getStreet() == null || addressData.getStreet().equals("")) {
+				addressData.setStreet(oldAddr.getStreet());
+			}
 
 			String newUniqueAddr = addressData.getNumber() + addressData.getStreet() + addressData.getCity();
 			String hash = md5(newUniqueAddr);
