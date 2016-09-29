@@ -22,4 +22,8 @@ public interface DBManager {
 	
 	public Address getAddress(String address);
 
+	public DBReturnCode updateCustomer(Customer customerData);
+
+	public DBReturnCode updateAddress(Address addressData);
+
 }

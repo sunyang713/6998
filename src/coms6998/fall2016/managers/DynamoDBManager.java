@@ -82,24 +82,51 @@ public class DynamoDBManager implements DBManager{
 	}
 	
 	public DBReturnCode updateCustomer(Customer customerData) {
-		Customer customer = mapper.load(customerData);
-		if(customer == null || customer.isDeleted()) {
+		Customer oldCustomer = mapper.load(Customer.class, customerData.getEmail());
+		if(oldCustomer == null || oldCustomer.isDeleted()) {
 			return DBReturnCode.NotFound;
 		} else {
+			if (customerData.getAddressRef() == null || customerData.getAddressRef().equals("")) {
+				customerData.setAddressRef(oldCustomer.getAddressRef());
+			}
+			if (customerData.getFirstName() == null || customerData.getFirstName().equals("")) {
+				customerData.setFirstName(oldCustomer.getFirstName());
+			}
+			if (customerData.getLastName() == null || customerData.getLastName().equals("")) {
+				customerData.setLastName(oldCustomer.getLastName());
+			}
+			if (customerData.getPhoneNumber() == null || customerData.getPhoneNumber().equals("")) {
+				customerData.setPhoneNumber(oldCustomer.getPhoneNumber());
+			}
+			
 			mapper.save(customerData);
 			return DBReturnCode.Success;
 		}
 	}
 	
 	public DBReturnCode updateAddress(Address addressData) {
-		String newUniqueAddr = addressData.getNumber() + addressData.getStreet() + addressData.getCity();
-		String hash = md5(newUniqueAddr);
 		
 		Address oldAddr = mapper.load(Address.class, addressData.getUuid());
 
 		if(oldAddr == null || oldAddr.isDeleted()) {
 			return DBReturnCode.NotFound;
 		} else {
+			if (addressData.getCity() == null || addressData.getCity().equals("")) {
+				addressData.setCity(oldAddr.getCity());
+			}
+			if (addressData.getNumber() == null || addressData.getNumber().equals("")) {
+				addressData.setNumber(oldAddr.getNumber());
+			}
+			if (addressData.getState() == null || addressData.getNumber().equals("")) {
+				addressData.setState(oldAddr.getState());
+			}
+			if (addressData.getZipCode() == null || addressData.getZipCode().equals("")) {
+				addressData.setZipCode(oldAddr.getZipCode());
+			}
+
+			String newUniqueAddr = addressData.getNumber() + addressData.getStreet() + addressData.getCity();
+			String hash = md5(newUniqueAddr);
+
 			addressData.setUuid(hash);
 			mapper.save(addressData);
 			oldAddr.setDeleted(true);
