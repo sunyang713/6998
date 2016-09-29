@@ -108,5 +108,26 @@ public class DynamoDBManager implements DBManager{
 		}
 	}
 
+	public Customer getCustomer(String emailKey) {
+		return mapper.load(Customer.class, emailKey);
+	}
+	
+	public DBReturnCode getCus(Customer customer) {
+		if (mapper.load(customer) != null) {
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
+	}
+	
+	public DBReturnCode getAdd(Address address) {
+		if (mapper.load(address) != null) {
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
+	}
+	
+	public Address getAddress(String uuidKey) {
+		return mapper.load(Address.class, uuidKey);
+	}
 
 }
