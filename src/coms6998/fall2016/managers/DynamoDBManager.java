@@ -90,6 +90,23 @@ public class DynamoDBManager implements DBManager{
 			return DBReturnCode.Success;
 		}
 	}
+	
+	public DBReturnCode updateAddress(Address addressData) {
+		String newUniqueAddr = addressData.getNumber() + addressData.getStreet() + addressData.getCity();
+		String hash = md5(newUniqueAddr);
+		
+		Address oldAddr = mapper.load(Address.class, addressData.getUuid());
+
+		if(oldAddr == null || oldAddr.isDeleted()) {
+			return DBReturnCode.NotFound;
+		} else {
+			addressData.setUuid(hash);
+			mapper.save(addressData);
+			oldAddr.setDeleted(true);
+			mapper.save(oldAddr);
+			return DBReturnCode.Success;
+		}
+	}
 
 
 }
