@@ -9,6 +9,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 public class Address {
 	
 	private String uuid;
+	private String deliveryPointBarcode;
 	private String number;
 	private String street;
 	private String city;
@@ -16,12 +17,21 @@ public class Address {
 	private String zipCode;
 	private boolean isDeleted;
 	
-	@DynamoDBHashKey(attributeName="UUID")
+	
+	@DynamoDBAttribute(attributeName="uuid")
 	public String getUuid() {
 		return uuid;
 	}
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+	
+	@DynamoDBHashKey(attributeName="dpBarcode")
+	public String getDPBarcode() {
+		return deliveryPointBarcode;
+	}
+	public void setDPBarcode(String barcode) {
+		this.deliveryPointBarcode = barcode;
 	}
 	
 	@DynamoDBAttribute(attributeName="number")
