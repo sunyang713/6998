@@ -53,11 +53,10 @@ public class DynamoDBManager implements DBManager{
 	}
 	
 	public DBReturnCode create(Address address){
-		//check if an address exists first with that UUID and if it doesn't, generate it
-		String uniqueAddr = address.getNumber() + address.getStreet() + address.getCity();
-		String hash = md5(uniqueAddr);
-		if (mapper.load(address.getClass(), hash) == null) {
-			address.setUuid(hash); 
+		//check if an address exists first with that delivery point barcode and if it doesn't, enter it
+		String deliveryBarCode = address.getDPBarcode();
+		if (mapper.load(address.getClass(), deliveryBarCode) == null) {
+			//address.setUuid("xxx");
 			mapper.save(address);
 			return DBReturnCode.Success;
 		}
