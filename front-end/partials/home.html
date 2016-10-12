@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is a partial, and is templated by AngularJS -->
+<div>
+    <div>
+        <md-button class="md-raised md-primary" ng-click='showCreateCustomer($event)'>Create Customer</md-button>
+        <md-button class="md-raised md-primary" ng-click='showCustomer($event, "view")'>Lookup Customer</md-button>
+        <md-button class="md-raised md-primary" ng-click='showCustomer($event, "update")'>Update Customer</md-button>
+        <md-button class="md-raised md-primary" ng-click='showCustomer($event, "delete")'>Delete Customer</md-button>
+    </div>
+    <script type="text/ng-template" id="dialog1.tmpl.html">
+    <md-dialog aria-label="Customer">
+        <md-toolbar>
+          <div class="md-toolbar-tools">
+            <h2>Customer</h2>
+          </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+                <md-content layout-padding="">
+                    <md-input-container md-no-float="" class="md-block">
+                        <label>Email</label>
+                        <input ng-model="customer.email" type="email" ng-readonly="mode==='view' || mode==='update' || mode==='delete'"/>
+                    </md-input-container>
+                    <div layout-gt-sm="row">
+                      <md-input-container class="md-block" flex-gt-sm="">
+                        <label>First name</label>
+                        <input ng-model="customer.firstName" ng-readonly="mode==='view' || mode==='delete'">
+                      </md-input-container>
+
+                      <md-input-container class="md-block" flex-gt-sm="">
+                        <label>Last Name</label>
+                        <input ng-model="customer.lastName" ng-readonly="mode==='view' || mode==='delete'">
+                      </md-input-container>
+                    </div>
+
+                    <md-input-container md-no-float="" class="md-block">
+                      <input ng-model="customer.phoneNumber" type="text" placeholder="Phone Number" ng-readonly="mode==='view' || mode==='delete'">
+                    </md-input-container>
+
+                    <md-input-container layout="row">
+                          <md-button class="md-raised md-primary" ng-click="cancel()" ng-if="mode==='create' || mode==='delete' || mode==='update'">
+                           Cancel
+                          </md-button>
+                          <md-button class="md-raised md-primary" ng-click="create()" ng-if="mode==='create'">
+                            Create
+                          </md-button>
+                          <md-button class="md-raised md-primary" ng-click="cancel()" ng-if="mode==='view'">
+                            Close
+                          </md-button>
+                          <md-button class="md-raised md-primary" ng-click="update()" ng-if="mode==='update'">
+                            Update
+                          </md-button>
+                          <md-button class="md-raised md-primary" ng-click="delete()" ng-if="mode==='delete'">
+                            Delete
+                          </md-button>
+                    </md-input-container>
+
+                    <md-input-container md-no-float="" class="md-block">
+                        <md-button class="md-raised md-primary" ng-click="showAddress = true" ng-hide="showAddress || mode!=='update' || address">Add Address</md-button>
+                    </md-input-container>
+                    <md-input-container md-no-float="" class="md-block" ng-show="showAddress || address">
+                        <div layout-gt-sm="row">
+                          <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Street Number</label>
+                            <input ng-model="address.number" ng-readonly="mode==='view' || mode==='delete'" style="color:black">
+                          </md-input-container>
+
+                          <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Street Name</label>
+                            <input ng-model="address.street" ng-readonly="mode==='view' || mode==='delete'" style="color:black">
+                          </md-input-container>
+                        </div>
+                        <div layout-gt-sm="row">
+                          <md-input-container class="md-block" flex-gt-sm="">
+                            <label>City</label>
+                            <input ng-model="address.city" ng-readonly="mode==='view' || mode==='delete'" style="color:black">
+                          </md-input-container>
+
+                          <md-input-container class="md-block" flex-gt-sm="">
+                            <label>State</label>
+                            <input ng-model="address.state" ng-readonly="mode==='view' || mode==='delete'" style="color:black">
+                          </md-input-container>
+                        </div>
+                        <div layout-gt-sm="row">
+                          <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Zip Code</label>
+                            <input ng-model="address.zipCode" ng-readonly="mode==='view' || mode==='delete'" style="color:black">
+                          </md-input-container>
+                        </div>
+                        <div layout-gt-sm="row">
+                            <md-button class="md-raised md-primary" ng-click="address = null;showAddress=false" ng-hide="customer.addressRef">Cancel Add Address</md-button>
+                            <md-button class="md-raised md-primary" ng-click="addUpdateAddress('add')" ng-hide="customer.addressRef">Add Address</md-button>
+                            <md-button class="md-raised md-primary" ng-click="addUpdateAddress('update')" ng-show="customer.addressRef">Update Address</md-button>
+                        <div>
+                    </md-input-container>
+                </md-content>
+        </md-dialog-content>
+        <md-dialog-actions>
+        </md-dialog-actions>
+    </md-dialog>
+    </script>
+</div>
