@@ -56,19 +56,29 @@
                     </md-input-container>
 
                     <md-input-container md-no-float="" class="md-block">
-                        <md-button class="md-raised md-primary" ng-click="showAddress = true" ng-hide="showAddress || mode!=='update' || address">Add Address</md-button>
+                        <md-button class="md-raised md-primary" ng-click="showAddress = true" ng-hide="showAddress || mode!=='update' || customer.addressRef">Add Address</md-button>
                     </md-input-container>
-                    <md-input-container md-no-float="" class="md-block" ng-show="showAddress || address">
+                    <md-input-container md-no-float="" class="md-block" ng-show="showAddress || customer.addressRef">
                         <div layout-gt-sm="row">
                           <md-input-container class="md-block" flex-gt-sm="">
                             <label>Street Number</label>
                             <input ng-model="address.number" ng-readonly="mode==='view' || mode==='delete'" style="color:black">
                           </md-input-container>
-
                           <md-input-container class="md-block" flex-gt-sm="">
-                            <label>Street Name</label>
-                            <input ng-model="address.street" ng-readonly="mode==='view' || mode==='delete'" style="color:black">
-                          </md-input-container>
+                                <md-autocomplete ng-disabled="mode==='view' || mode==='delete'" md-no-cache="true" md-selected-item="selectedAddress" md-search-text-change="updateAutoCompleteList()" md-search-text="address.street" md-selected-item-change="selectedAddressChanged(item)" md-items="item in autocompleteAddresses" md-item-text="item.street" md-min-length="0" placeholder="Type street name for suggestions" md-menu-class="autocomplete-custom-template">
+                                    <md-item-template>
+                                      <span class="item-title">
+                                        <md-icon md-svg-icon="img/icons/octicon-repo.svg"></md-icon>
+                                        <span> {{item.number}} {{item.street}}</span>
+                                      </span>
+                                      <span class="item-metadata">
+                                        <span class="item-metastat">
+                                          <strong>{{item.city}} {{item.state}}</strong>
+                                        </span>
+                                      </span>
+                                    </md-item-template>
+                                </md-autocomplete>
+                            </md-input-container>
                         </div>
                         <div layout-gt-sm="row">
                           <md-input-container class="md-block" flex-gt-sm="">
@@ -90,7 +100,7 @@
                         <div layout-gt-sm="row">
                             <md-button class="md-raised md-primary" ng-click="address = null;showAddress=false" ng-hide="customer.addressRef">Cancel Add Address</md-button>
                             <md-button class="md-raised md-primary" ng-click="addUpdateAddress('add')" ng-hide="customer.addressRef">Add Address</md-button>
-                            <md-button class="md-raised md-primary" ng-click="addUpdateAddress('update')" ng-show="customer.addressRef">Update Address</md-button>
+                            <md-button class="md-raised md-primary" ng-click="addUpdateAddress('update')" ng-show="address && mode=='update'">Update Address</md-button>
                         <div>
                     </md-input-container>
                 </md-content>

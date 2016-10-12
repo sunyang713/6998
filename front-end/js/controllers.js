@@ -20,6 +20,9 @@ cs6998Controllers.controller('cs6998MainCtrl', function ($scope, Customers, Addr
         function DialogController($scope, $mdDialog, Customers, Addresses, mode, customer) {
             $scope.customer = customer;
             $scope.mode = mode;
+            $scope.showAddress = false;
+            //$scope.autocompleteAddresses = [{number: "21", street: "clark", city: "selden", state:"ny"}, {number: "18", street: "clark", city: "selden", state:"ny"},{number: "19", street: "clark", city: "selden", state:"ny"},{number: "20", street: "clark", city: "selden", state:"ny"}];
+            $scope.autocompleteAddresses = [];
 
             if(customer!==null && customer.addressRef) {
                 $scope.address = Addresses.find({DPBarcode: customer.addressRef});
@@ -116,6 +119,29 @@ cs6998Controllers.controller('cs6998MainCtrl', function ($scope, Customers, Addr
                                 .ariaLabel(message)
                                 .ok('Ok')
                             );
+                });
+            }
+
+            /*AutoComplete Related Methods Below*/
+            $scope.selectedAddressChanged = function(newAddress) {
+                $scope.address = {};
+                $scope.address.number = newAddress.number;
+                $scope.address.street = newAddress.street;
+                $scope.address.city = newAddress.city;
+                $scope.address.state = newAddress.state;
+            }
+
+            $scope.updateAutoCompleteList = function() {
+                Addresses.suggestions({prefix: $scope.address.number + " " + $scope.address.street}, function(result){
+                    //console.log(JSON.stringify(result));
+                    var newSuggestions = [];
+                    for(i=0; i<result.suggestions.length; i++) {
+                        streetNumber = result.suggestions[i].street_line.substring(0, result.suggestions[i].street_line.indexOf(' '));
+                        streetName = result.suggestions[i].street_line.substring(result.suggestions[i].street_line.indexOf(' '), result.suggestions[i].street_line.length);
+                        newSuggestions[i] = {number: streetNumber, street: streetName, city: result.suggestions[i].city, state: result.suggestions[i].state};
+                        //console.log("Suggestion " + i + " " + JSON.stringify(newSuggestions[i]));
+                        $scope.autocompleteAddresses = newSuggestions;
+                    }
                 });
             }
         }
