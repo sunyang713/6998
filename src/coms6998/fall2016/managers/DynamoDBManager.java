@@ -155,8 +155,8 @@ public class DynamoDBManager implements DBManager{
 		return DBReturnCode.NotFound;
 	}
 	
-	public Address getAddress(String uuidKey) {
-		return mapper.load(Address.class, uuidKey);
+	public Address getAddress(String DPBarCode) {
+		return mapper.load(Address.class, DPBarCode);
 	}
 
 }

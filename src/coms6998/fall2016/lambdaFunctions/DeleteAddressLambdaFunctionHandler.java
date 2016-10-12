@@ -15,16 +15,16 @@ public class DeleteAddressLambdaFunctionHandler implements RequestHandler<Addres
 	
     @Override
     public String handleRequest(Address address, Context context) {
-        context.getLogger().log("Deleting address with UUID: " + address.getUuid());
-        if(address.getUuid()== null || address.getUuid().isEmpty()) {
-        	ErrorPayload errorPayload = new ErrorPayload("BadRequest", 422, context.getAwsRequestId(), "No UUID provided");
+        context.getLogger().log("Deleting address with DPBarcode: " + address.getDPBarcode());
+        if(address.getDPBarcode()== null || address.getDPBarcode().isEmpty()) {
+        	ErrorPayload errorPayload = new ErrorPayload("BadRequest", 422, context.getAwsRequestId(), "No DPBarcode provided");
         	throw new RuntimeException(errorPayload.toString());
         }
         DBReturnCode rc = dbManager.deleteAddress(address);
         if(rc.equals(DBReturnCode.Success)) {
-        	return "{\"message\":\"Address with UUID: " + address.getUuid() + " deleted.\"}";
+        	return "{\"message\":\"Address with DPBarcode: " + address.getDPBarcode() + " deleted.\"}";
         } else if(rc.equals(DBReturnCode.NotFound)){
-        	ErrorPayload errorPayload = new ErrorPayload("NotFound", 404, context.getAwsRequestId(), "No address with the provided UUID found: " + address.getUuid());
+        	ErrorPayload errorPayload = new ErrorPayload("NotFound", 404, context.getAwsRequestId(), "No address with the provided DPBarcode found: " + address.getDPBarcode());
         	throw new RuntimeException(errorPayload.toString());
         } else {
         	ErrorPayload errorPayload = new ErrorPayload("Error", 500, context.getAwsRequestId(), "Unknown Internal Error");

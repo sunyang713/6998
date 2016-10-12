@@ -15,19 +15,19 @@ public class GetAddressLambdaFunctionHandler implements RequestHandler<Address, 
 	
 	@Override
 	public Address handleRequest(Address address, Context context) {
-		context.getLogger().log("Getting address with UUID: " + address.getUuid());
-		if(address.getUuid()== null || address.getUuid().isEmpty()) {
-			ErrorPayload errorPayload = new ErrorPayload("BadRequest", 422, context.getAwsRequestId(), "No UUID provided");
+		context.getLogger().log("Getting address with DPBarcode: " + address.getDPBarcode());
+		if(address.getDPBarcode()== null || address.getDPBarcode().isEmpty()) {
+			ErrorPayload errorPayload = new ErrorPayload("BadRequest", 422, context.getAwsRequestId(), "No DPBarcode provided");
 			throw new RuntimeException(errorPayload.toString());
 		}
 		DBReturnCode rc = dbManager.getAdd(address);
-		Address newAddress = (new DynamoDBManager()).getAddress(address.getUuid());
+		Address newAddress = (new DynamoDBManager()).getAddress(address.getDPBarcode());
 		if(rc.equals(DBReturnCode.Success) && !newAddress.isDeleted()) {
-			System.out.printf("Address UUID: %s, city: %s, street: %s, number: %s, zipCode: %s.", newAddress.getUuid(), newAddress.getCity(), 
+			System.out.printf("Address DPBarcode: %s, city: %s, street: %s, number: %s, zipCode: %s.", newAddress.getDPBarcode(), newAddress.getCity(), 
 					newAddress.getStreet(), newAddress.getNumber(), newAddress.getZipCode());
 			return newAddress;
 		} else if(rc.equals(DBReturnCode.NotFound) || newAddress.isDeleted()){
-			ErrorPayload errorPayload = new ErrorPayload("NotFound", 404, context.getAwsRequestId(), "No address with the provided UUID found: " + address.getUuid());
+			ErrorPayload errorPayload = new ErrorPayload("NotFound", 404, context.getAwsRequestId(), "No address with the provided DPBarcode found: " + address.getDPBarcode());
 			throw new RuntimeException(errorPayload.toString());
 		} else {
 			ErrorPayload errorPayload = new ErrorPayload("Error", 500, context.getAwsRequestId(), "Unknown Internal Error");
