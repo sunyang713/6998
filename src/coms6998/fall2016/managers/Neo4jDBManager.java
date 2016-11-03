@@ -7,6 +7,7 @@ import org.neo4j.ogm.config.DriverConfiguration;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 
+import coms6998.fall2016.models.Address;
 import coms6998.fall2016.models.Comment;
 import coms6998.fall2016.models.DBReturnCode;
 import coms6998.fall2016.models.Episode;
@@ -23,7 +24,7 @@ public class Neo4jDBManager implements GraphDBManager {
 		Configuration configuration = new Configuration();
 	             configuration.driverConfiguration()
 	             .setDriverClassName("org.neo4j.ogm.drivers.http.driver.HttpDriver")
-	             .setURI("http://serverless:5Zq7mXpTExz2J8suICO1@hobby-ifegjbeejildgbkeoedfhhol.dbs.graphenedb.com:24789");
+	             .setURI("http://serverless:3SqmIQ7C75bhLh6RbeJU@hobby-cbkknbeejildgbkehipmbhol.dbs.graphenedb.com:24789");
 		SessionFactory sessionFactory = new SessionFactory(configuration, "coms6998.fall2016.models");
 		session = sessionFactory.openSession();
 		}
@@ -79,98 +80,154 @@ public class Neo4jDBManager implements GraphDBManager {
 
 	@Override
 	public DBReturnCode addProperty(Property property) {
-		// TODO Auto-generated method stub
-		return null;
+		session.save(property);
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public Property getProperty(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		Property property = session.load(Property.class, id);
+		if(property.isDeleted()) {
+			return null;
+		}
+		return property;
 	}
 
 	@Override
 	public DBReturnCode deleteProperty(Property property) {
-		// TODO Auto-generated method stub
-		return null;
+		Property propertyToDelete = getProperty(property.getId());
+		if(propertyToDelete != null) {
+			propertyToDelete.setDeleted(true);
+			session.save(propertyToDelete);
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
 	public DBReturnCode updateProperty(Property property) {
-		// TODO Auto-generated method stub
-		return null;
+		Property oldProperty = session.load(Property.class, property.getId());
+		if(oldProperty == null || oldProperty.isDeleted()) {
+			return DBReturnCode.NotFound;
+		} else{
+			property.setName(property.getName());
+		}
+		session.save(property);
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public DBReturnCode addFranchise(Franchise franchise) {
-		// TODO Auto-generated method stub
-		return null;
+		session.save(franchise);
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public Franchise getFranchise(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		Franchise franchise = session.load(Franchise.class, id);
+		if(franchise.isDeleted()) {
+			return null;
+		}
+		return franchise;
 	}
 
 	@Override
 	public DBReturnCode deleteFranchise(Franchise franchise) {
-		// TODO Auto-generated method stub
-		return null;
+		Franchise franchiseToDelete = getFranchise(franchise.getId());
+		if(franchiseToDelete != null) {
+			franchiseToDelete.setDeleted(true);
+			session.save(franchiseToDelete);
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
 	public DBReturnCode updateFranchise(Franchise franchise) {
-		// TODO Auto-generated method stub
-		return null;
+		Franchise oldFranchise = session.load(Franchise.class, franchise.getId());
+		if(oldFranchise == null || oldFranchise.isDeleted()) {
+			return DBReturnCode.NotFound;
+		} else{
+			franchise.setName(franchise.getName());
+		}
+		session.save(franchise);
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public DBReturnCode addSeries(Series series) {
-		// TODO Auto-generated method stub
-		return null;
+		session.save(series);
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public Series getSeries(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		Series series = session.load(Series.class, id);
+		if(series.isDeleted()) {
+			return null;
+		}
+		return series;
 	}
 
 	@Override
 	public DBReturnCode deleteSeries(Series series) {
-		// TODO Auto-generated method stub
-		return null;
+		Series seriesToDelete = getSeries(series.getId());
+		if(seriesToDelete != null) {
+			seriesToDelete.setDeleted(true);
+			session.save(seriesToDelete);
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
 	public DBReturnCode updateSeries(Series series) {
-		// TODO Auto-generated method stub
-		return null;
+		Series oldSeries = session.load(Series.class, series.getId());
+		if(oldSeries == null || oldSeries.isDeleted()) {
+			return DBReturnCode.NotFound;
+		} else{
+			series.setName(series.getName());
+		}
+		session.save(series);
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public DBReturnCode addEpisode(Episode episode) {
-		// TODO Auto-generated method stub
-		return null;
+		session.save(episode);
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public Episode getEpisode(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		Episode episode = session.load(Episode.class, id);
+		if(episode.isDeleted()) {
+			return null;
+		}
+		return episode;
 	}
 
 	@Override
 	public DBReturnCode deleteEpisode(Episode episode) {
-		// TODO Auto-generated method stub
-		return null;
+		Episode episodeToDelete = getEpisode(episode.getId());
+		if(episodeToDelete != null) {
+			episodeToDelete.setDeleted(true);
+			session.save(episodeToDelete);
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
 	public DBReturnCode updateEpisode(Episode episode) {
-		// TODO Auto-generated method stub
-		return null;
+		Episode oldEpisode = session.load(Episode.class, episode.getId());
+		if(oldEpisode == null || oldEpisode.isDeleted()) {
+			return DBReturnCode.NotFound;
+		} else{
+			episode.setName(episode.getName());
+		}
+		session.save(episode);
+		return DBReturnCode.Success;
 	}
 
 	@Override
@@ -229,26 +286,82 @@ public class Neo4jDBManager implements GraphDBManager {
 
 	@Override
 	public Set<Comment> getComments(Property property) {
-		// TODO Auto-generated method stub
-		return null;
+		property = session.load(Property.class, property.getId());
+		if (property.isDeleted()) {
+			return null;
+		}
+		return property.getComments();
 	}
 
 	@Override
 	public Set<Comment> getComments(Franchise franchise) {
-		// TODO Auto-generated method stub
-		return null;
+		franchise = session.load(Franchise.class, franchise.getId());
+		if (franchise.isDeleted()) {
+			return null;
+		}
+		return franchise.getComments();
 	}
 
 	@Override
 	public Set<Comment> getComments(Series series) {
-		// TODO Auto-generated method stub
-		return null;
+		series = session.load(Series.class, series.getId());
+		if (series.isDeleted()) {
+			return null;
+		}
+		return series.getComments();
 	}
 
 	@Override
 	public Set<Comment> getComments(Episode episode) {
-		// TODO Auto-generated method stub
-		return null;
+		episode = session.load(Episode.class, episode.getId());
+		if (episode.isDeleted()) {
+			return null;
+		}
+		return episode.getComments();
+	}
+	
+	@Override
+	public DBReturnCode addComments(Comment comment, Property property) {
+		property = session.load(Property.class, property.getId());
+		if (property.isDeleted()) {
+			return null;
+		}
+		property.addComment(comment);
+		session.save(property);
+		return DBReturnCode.Success;
+	}
+
+	@Override
+	public DBReturnCode addComments(Comment comment, Franchise franchise) {
+		franchise = session.load(Franchise.class, franchise.getId());
+		if (franchise.isDeleted()) {
+			return null;
+		}
+		franchise.addComment(comment);
+		session.save(franchise);
+		return DBReturnCode.Success;
+	}
+	
+	@Override
+	public DBReturnCode addComments(Comment comment, Series series) {
+		series = session.load(Series.class, series.getId());
+		if (series.isDeleted()) {
+			return null;
+		}
+		series.addComment(comment);
+		session.save(series);
+		return DBReturnCode.Success;
+	}
+	
+	@Override
+	public DBReturnCode addComments(Comment comment, Episode episode) {
+		episode = session.load(Episode.class, episode.getId());
+		if (episode.isDeleted()) {
+			return null;
+		}
+		episode.addComment(comment);
+		session.save(episode);
+		return DBReturnCode.Success;
 	}
 
 }
