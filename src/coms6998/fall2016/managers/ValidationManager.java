@@ -1,6 +1,7 @@
 package coms6998.fall2016.managers;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,10 +20,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import coms6998.fall2016.models.Customer;
 import coms6998.fall2016.models.Address;
 import coms6998.fall2016.models.SmartyStreetsAddress;
+import coms6998.fall2016.models.contentcatalog.ContentModel;
 
 public class ValidationManager {
 	private static final String URL_COMPONENTS_BEG = "https://us-street.api.smartystreets.com/street-address";
@@ -37,6 +40,7 @@ public class ValidationManager {
 	private static final String CANDIDATES_COUNT = "5";
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String MATCH_DEFAULT = "strict";
+	private static final Pattern CONTENT_ID_REGEX = Pattern.compile("^[a-zA-Z0-9-_]+$");
 
 	private Context context;
 
@@ -108,6 +112,55 @@ public class ValidationManager {
 		}
 		return false;
 	}
+	
+	
+	public static <T extends ContentModel> T validateMapForUpdate(Map<String, String> map, Class<T> modelType) throws InvalidContentException {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			T payload = mapper.convertValue(map, modelType);
+			return validateContentForUpdate(payload);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidContentException("Invalid fields in payload.");
+		}
+	}
+
+	public static <T extends ContentModel> T validateMapForCreation(Map<String, String> map, Class<T> modelType) throws InvalidContentException {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			T payload = mapper.convertValue(map, modelType);
+			return validateContentForCreation(payload);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidContentException("Invalid fields in payload.");
+		}
+	}
+
+	public static <T extends ContentModel> T validateContentForUpdate(T content) throws InvalidContentException {
+		if (content.getId() != null) {
+			throw new InvalidContentException("Cannot change ID.");
+		}
+		if (content.getName() != null && content.getName().isEmpty()) {
+			throw new InvalidContentException("Name cannot be empty.");
+		}
+		return content;
+	}
+
+	public static <T extends ContentModel> T validateContentForCreation(T content) throws InvalidContentException {
+		if (content.getId() == null || content.getId().isEmpty()) {
+			throw new InvalidContentException("ID cannot be empty.");
+		}
+		Matcher matcher = CONTENT_ID_REGEX.matcher(content.getId());
+		if (!matcher.matches()) {
+			throw new InvalidContentException("Invalid ID. Must be alphanumeric and dashes only.");
+		}
+		if (content.getName() == null) {
+			throw new InvalidContentException("Must provide name.");
+		}
+		if (content.getName().isEmpty()) {
+			throw new InvalidContentException("Name cannot be empty.");
+		}
+		return content;
+	}
+	
 	
 	//returns a deliveryPointBarcode or empty string given a SmartyStreets GET response
 	//TODO - this is very coupled with SmartyStreets API, maybe we should move it elsewhere or 
@@ -183,6 +236,12 @@ public class ValidationManager {
 		String urlString = URL_COMPONENTS_BEG + "?" + query;
 	
 		return urlString.replace("+", "%20");
+	}
+
+	public static class InvalidContentException extends Exception {
+	    public InvalidContentException(String message) {
+	        super(message);
+	    }
 	}
 
 }

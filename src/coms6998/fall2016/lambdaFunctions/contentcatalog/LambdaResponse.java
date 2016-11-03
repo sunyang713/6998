@@ -1,4 +1,4 @@
-package coms6998.fall2016.lambdaFunctions.contentCatalog;
+package coms6998.fall2016.lambdaFunctions.contentcatalog;
 
 /**
  * 

@@ -8,19 +8,13 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 
-import coms6998.fall2016.models.dynamodb.ContentDynamoDBModel;
+import coms6998.fall2016.models.contentcatalog.ContentModel;
 
-public class AdminDynamoDBDAO<T extends ContentDynamoDBModel> implements AdminDAO<T> {
+public class AdminDynamoDBDAO<T extends ContentModel> implements AdminDAO<T> {
 
 	private AmazonDynamoDBClient dynamoDBClient;
 	private DynamoDBMapper mapper;
 	private Class<T> modelType; // should be not null
-
-	public AdminDynamoDBDAO() {
-		dynamoDBClient = new AmazonDynamoDBClient();
-		dynamoDBClient.setRegion(Region.getRegion(Regions.US_EAST_1));
-		mapper = new DynamoDBMapper(dynamoDBClient);
-	}
 
 	public AdminDynamoDBDAO(Class<T> modelType) {
 		dynamoDBClient = new AmazonDynamoDBClient();
@@ -41,41 +35,63 @@ public class AdminDynamoDBDAO<T extends ContentDynamoDBModel> implements AdminDA
 	 * Creates the entity only if it does not exist.
 	 */
 	@Override
-	public boolean create(T entity) throws DAOException {
+	public DAOResponse<T> create(T entity) {
 
 		entity.setCreatedOnTimestamp(new Date());
 		entity.setUpdatedOnTimestamp(new Date());
 		entity.setIsDeleted(false);
+		
+		System.out.println(entity.getId());
 
 		try {
 			mapper.save(entity);
+			return new DAOResponse<T>(true, "Successfully created", entity);
 		} catch (ConditionalCheckFailedException e) {
-			throw new DAOException(entity.getId() + " already exists.");
+			return new DAOResponse<T>(false, "Already exists", entity);
 		}
-		return true;
 	}
 
 	@Override
-	public T read(String key) throws DAOException {
+	public DAOResponse<T> read(String key) {
 		T entity = mapper.load(modelType, key);
 		if (entity == null) {
-			throw new DAOException(key + " not found.");
+			return new DAOResponse<T>(false, key + " not found", null);
+		} else {
+			return new DAOResponse<T>(true, "Succesfully read", entity);
 		}
-		return entity;
 	}
 
+	// should test read (sum1 else delets,) then save. should die?
 	@Override
-	public boolean update(String key, T newEntity) throws DAOException {
-		T entity = read(key);
+	public DAOResponse<T> update(String key, T newEntity) {
+		DAOResponse<T> readResponse = read(key);
+		if (!readResponse.succeeded()) {
+			return readResponse;
+		}
+		T entity = readResponse.getPayload();
 		entity.updateFromNew(newEntity);
-		mapper.save(entity);
-		return true;
+		try {
+			mapper.save(entity);
+			return new DAOResponse<T>(true, "Successfully updated", entity);
+		} catch (ConditionalCheckFailedException e) {
+			return new DAOResponse<T>(false, "Unable to update at this time", newEntity);
+		}
 	}
 
 	@Override
-	public boolean delete(String key) throws DAOException {
-		mapper.delete(read(key));
-		return true;
+	public DAOResponse<T> delete(String key) {
+		DAOResponse<T> readResponse = read(key);
+		if (!readResponse.succeeded()) {
+			return readResponse;
+		}
+		
+		T entity = readResponse.getPayload();
+		try {
+			mapper.delete(entity);
+			return new DAOResponse<T>(true, "Successfully deleted", entity);
+		} catch (ConditionalCheckFailedException e) {
+			return new DAOResponse<T>(false, "Unable to delete at this time", entity);
+		}
 	}
 
 }

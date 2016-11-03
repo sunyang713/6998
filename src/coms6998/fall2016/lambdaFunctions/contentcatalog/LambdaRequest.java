@@ -1,7 +1,10 @@
-package coms6998.fall2016.lambdaFunctions.contentCatalog;
+package coms6998.fall2016.lambdaFunctions.contentcatalog;
 
 import java.util.HashMap;
 import java.util.StringJoiner;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LambdaRequest {
 
@@ -54,7 +57,14 @@ public class LambdaRequest {
 	}
 	
 	public String toString() {
-		StringJoiner joiner = new StringJoiner(" ");
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		StringJoiner joiner = new StringJoiner("/");
 		return joiner.add(operation).add(resource).add(parameter).toString();
 	}
 

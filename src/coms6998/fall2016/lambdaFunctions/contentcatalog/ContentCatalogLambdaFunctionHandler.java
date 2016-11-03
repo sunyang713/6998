@@ -1,4 +1,4 @@
-package coms6998.fall2016.lambdaFunctions.contentCatalog;
+package coms6998.fall2016.lambdaFunctions.contentcatalog;
 
 import java.util.HashMap;
 
@@ -7,21 +7,23 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import coms6998.fall2016.managers.AdminDAO;
-import coms6998.fall2016.managers.AdminDAO.DAOException;
+import coms6998.fall2016.managers.AdminDAO.DAOResponse;
 import coms6998.fall2016.managers.AdminDynamoDBDAO;
-import coms6998.fall2016.managers.ContentValidator;
-import coms6998.fall2016.managers.ContentValidator.InvalidContentException;
-import coms6998.fall2016.models.Resource;
-import coms6998.fall2016.models.dynamodb.ContentDynamoDBModel;
+import coms6998.fall2016.managers.ValidationManager;
+import coms6998.fall2016.managers.ValidationManager.InvalidContentException;
+import coms6998.fall2016.models.contentcatalog.ContentModel;
+import coms6998.fall2016.models.contentcatalog.Resource;
 
-public class ContentCatalogLambdaFunctionHandler implements RequestHandler<LambdaRequest, LambdaResponse<ContentDynamoDBModel>> {
+public class ContentCatalogLambdaFunctionHandler implements RequestHandler<LambdaRequest, LambdaResponse<ContentModel>> {
 	
 	LambdaLogger logger;
 
 	@Override
-    public LambdaResponse<ContentDynamoDBModel> handleRequest(LambdaRequest input, Context context) {
+    public LambdaResponse<ContentModel> handleRequest(LambdaRequest input, Context context) {
 
-		AdminDAO<ContentDynamoDBModel> dataAccessObject;
+		AdminDAO<ContentModel> dataAccessObject;
+		DAOResponse<? extends ContentModel> daoResponse;
+
 		logger = context.getLogger();
 		logger.log("Received input: " + input);
 
@@ -37,51 +39,53 @@ public class ContentCatalogLambdaFunctionHandler implements RequestHandler<Lambd
 		} catch (IllegalArgumentException e) {
 			throw new RuntimeException("No resource " + resourceString);
 		}
-		Class<? extends ContentDynamoDBModel> modelType = resource.getModelType();
-
+		Class<? extends ContentModel> modelType = resource.getModelType();
+		
 		// Initialize the DAO with the appropriate model type.
 		dataAccessObject = new AdminDynamoDBDAO(modelType);
-		
+
 		switch (operation) {
 		case "CREATE":
 			// Validate input
-			ContentDynamoDBModel payload;
+			ContentModel payload;
 			try {
-				payload = ContentValidator.validateMapForCreation(inputMap, modelType);
+				payload = ValidationManager.validateMapForCreation(inputMap, modelType);
 			} catch (InvalidContentException e) {
 				return respondFailure(e.getMessage());
 			}
-			try {
-				dataAccessObject.create(payload);
+			
+			daoResponse = dataAccessObject.create(payload);
+			if (daoResponse.succeeded()) {
 				return respondSuccess("Created " + resource + "/" + payload.getId());
-			} catch (DAOException e) {
-				return respondFailure(e.getMessage());
+			} else {
+				return respondFailure(daoResponse.getMessage());
 			}
+
 		case "READ":
-			try {
-				ContentDynamoDBModel content = dataAccessObject.read(parameter);
-				return respondSuccess("Retrieved " + resource + "/" + parameter, content);
-			} catch (DAOException e) {
-				return respondFailure(e.getMessage());
+			daoResponse = dataAccessObject.read(parameter);
+			if (daoResponse.succeeded()) {
+				return respondSuccess("Retrieved " + resource + "/" + parameter, daoResponse.getPayload());
+			} else {
+				return respondFailure(daoResponse.getMessage());
 			}
 		case "UPDATE":
 			try {
-				payload = ContentValidator.validateMapForUpdate(inputMap, modelType);
+				payload = ValidationManager.validateMapForUpdate(inputMap, modelType);
 			} catch (InvalidContentException e) {
 				return respondFailure(e.getMessage());
 			}
-			try {
-				dataAccessObject.update(parameter, payload);
+			daoResponse = dataAccessObject.update(parameter, payload);
+			if (daoResponse.succeeded()) {
 				return respondSuccess("Updated " + resource + "/" + parameter);
-			} catch (DAOException e) {
-				return respondFailure(e.getMessage());
+			} else {
+				return respondFailure(daoResponse.getMessage());
 			}
 		case "DELETE":
-			try {
-				dataAccessObject.delete(parameter);
+			daoResponse = dataAccessObject.delete(parameter);
+			if (daoResponse.succeeded()) {
 				return respondSuccess("Deleted " + resource + "/" + parameter);
-			} catch (DAOException e) {
-				return respondFailure(e.getMessage());
+			} else {
+				return respondFailure(daoResponse.getMessage());
 			}
 		default:
 			return respondFailure("Invalid operation.");
