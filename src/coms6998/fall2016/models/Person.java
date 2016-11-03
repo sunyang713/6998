@@ -7,7 +7,13 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.*;
+
 @NodeEntity
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class Person {
 	@GraphId
 	private Long id;
@@ -91,15 +97,51 @@ public class Person {
 	
 	public void addFollows(Person personToFollow) {
 		this.follows.add(personToFollow);
-		personToFollow.followedBy.add(this);
+	}
+	
+	public void addFollowedBy(Person followedBy) {
+		this.followedBy.add(followedBy);
 	}
 	
 	public void addFriend(Person newFriend){
 		this.friends.add(newFriend);
-		newFriend.friends.add(this);
 	}
 	
 	public void addComment(Comment comment){
 		this.comments.add(comment);
+	}
+	
+	public void setFriends(Set<Person> friends){
+		this.setFriends(friends);
+	}
+	
+	public void setFollows(Set<Person> follows){
+		this.setFollows(follows);
+	}
+	
+	public void setFollowedBy(Set<Person> followedBy){
+		this.setFollowedBy(followedBy);
+	}
+	
+	public Person cloneWithoutRelationships(){
+		Person p = new Person();
+		p.setEmail(email);
+		p.setFirstName(firstName);
+		p.setLastName(lastName);
+		return p;
+	}
+	
+	public Person cloneRemoveRecursiveRelationship() {
+		Person p = this.cloneWithoutRelationships();
+		for(Person friend: this.friends) {
+			p.addFriend(friend.cloneWithoutRelationships());
+		}
+		for(Person follows: this.follows) {
+			p.addFollows(follows.cloneWithoutRelationships());
+		}
+		for(Person followedBy: this.followedBy) {
+			p.addFollowedBy(followedBy.cloneWithoutRelationships());
+		}
+		return p;
 	}
 }

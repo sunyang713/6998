@@ -31,7 +31,7 @@ public class Neo4jDBManager implements GraphDBManager {
 	
 	public static void main(String args[]){
 		Neo4jDBManager graphDBManager = new Neo4jDBManager();
-		Person p1 = new Person();
+		/*Person p1 = new Person();
 		p1.setEmail("gaurav@gmail.com");
 		p1.setFirstName("gaurav");
 		p1.setLastName("singhal");
@@ -42,8 +42,12 @@ public class Neo4jDBManager implements GraphDBManager {
 		p2.setFirstName("gaurav2");
 		p2.setLastName("singhal");
 		p2.addFollows(p1);
-		graphDBManager.addPerson(p1);
-		System.out.println(p2.getEmail());
+		graphDBManager.addPerson(p1);*/
+		Person p = graphDBManager.getPerson(13).cloneRemoveRecursiveRelationship();
+		System.out.println(p.getFriends().size());
+		for(Person friend: p.getFriends()){
+			System.out.println(friend.getFriends().size());
+		}
 	}
 	
 	public DBReturnCode addComment(Comment comment) {
@@ -63,19 +67,38 @@ public class Neo4jDBManager implements GraphDBManager {
 
 	@Override
 	public Person getPerson(long id) {
-		return session.load(Person.class, id);
+		Person person = session.load(Person.class, id);
+		if(person.isDeleted()) {
+			return null;
+		}
+		return person;
 	}
 
 	@Override
 	public DBReturnCode deletePerson(Person person) {
-		// TODO Auto-generated method stub
-		return null;
+		Person personToDelete = session.load(Person.class, person.getId());
+		if(personToDelete != null) {
+			personToDelete.setDeleted(true);
+			session.save(personToDelete);
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
 	public DBReturnCode updatePerson(Person person) {
-		// TODO Auto-generated method stub
-		return null;
+		Person personToUpdate = this.getPerson(person.getId());
+		if(personToUpdate != null){
+			if(person.getFirstName() != null && !person.getFirstName().isEmpty()){
+				personToUpdate.setFirstName(person.getFirstName());
+			}
+			if(person.getLastName() != null && !person.getLastName().isEmpty()){
+				personToUpdate.setLastName(person.getLastName());
+			}
+			session.save(personToUpdate);
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
@@ -232,55 +255,98 @@ public class Neo4jDBManager implements GraphDBManager {
 
 	@Override
 	public DBReturnCode addComment(Person person, Comment comment) {
-		// TODO Auto-generated method stub
-		return null;
+		person = this.getPerson(person.getId());
+		if(person != null){
+			person.addComment(comment);
+			session.save(person);
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
 	public Set<Comment> getComments(Person person) {
-		// TODO Auto-generated method stub
+		person = this.getPerson(person.getId());
+		if(person != null){
+			return person.getComments();
+		}
 		return null;
 	}
 
 	@Override
 	public DBReturnCode deleteComment(Comment comment) {
-		// TODO Auto-generated method stub
-		return null;
+		comment = this.getComment(comment.getId());
+		if(comment != null){
+			session.delete(comment);
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
 	public DBReturnCode updateComment(Comment comment) {
-		// TODO Auto-generated method stub
-		return null;
+		Comment commentToUpdate = this.getComment(comment.getId());
+		if(commentToUpdate != null){
+			if(comment.getText()!=null && !comment.getText().isEmpty()){
+				commentToUpdate.setText(comment.getText());
+			}
+			session.save(commentToUpdate);
+			return DBReturnCode.Success;
+		}
+		return DBReturnCode.NotFound;
 	}
 
 	@Override
 	public DBReturnCode addFriend(Person p1, Person p2) {
-		// TODO Auto-generated method stub
-		return null;
+		p1 = this.getPerson(p1.getId());
+		p2 = this.getPerson(p2.getId());
+		if(p1 != null && p2 != null) {
+			p1.addFriend(p2);
+			session.save(p1);
+			p2.addFriend(p1);
+			session.save(p2);
+			return DBReturnCode.NotFound;
+		}
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public Set<Person> getFriends(Person person) {
-		// TODO Auto-generated method stub
+		person = this.getPerson(person.getId());
+		if(person != null){
+			return person.getFriends();
+		}
 		return null;
 	}
 
 	@Override
 	public DBReturnCode addFollows(Person p1, Person p2) {
-		// TODO Auto-generated method stub
-		return null;
+		p1 = this.getPerson(p1.getId());
+		p2 = this.getPerson(p2.getId());
+		if(p1 != null && p2 != null) {
+			p1.addFollows(p2);
+			p2.addFollowedBy(p1);
+			session.save(p1);
+			session.save(p2);
+			return DBReturnCode.NotFound;
+		}
+		return DBReturnCode.Success;
 	}
 
 	@Override
 	public Set<Person> getFollows(Person person) {
-		// TODO Auto-generated method stub
+		person = this.getPerson(person.getId());
+		if(person != null){
+			return person.getFollows();
+		}
 		return null;
 	}
 
 	@Override
 	public Set<Person> getFollowedBy(Person person) {
-		// TODO Auto-generated method stub
+		person = this.getPerson(person.getId());
+		if(person != null){
+			return person.getFollowedBy();
+		}
 		return null;
 	}
 
