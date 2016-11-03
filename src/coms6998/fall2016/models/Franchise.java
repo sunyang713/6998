@@ -11,9 +11,11 @@ import org.neo4j.ogm.annotation.Relationship;
 public class Franchise {
 
 	@GraphId
-	private long id;
+	private Long id;
 	
 	private String name;
+	
+	private boolean isDeleted;
 	
 	@Relationship(type = "COMMENTS", direction=Relationship.UNDIRECTED)
 	private Set<Comment> comments = new HashSet<>();
@@ -26,8 +28,12 @@ public class Franchise {
 		this.name = name;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 	public Set<Comment> getComments() {
@@ -36,6 +42,14 @@ public class Franchise {
 	
 	public void addComment(Comment comment){
 		this.comments.add(comment);
+	}
+	
+	public void setDeleted(boolean b) {
+		isDeleted = b;
+	}
+	
+	public boolean isDeleted() {
+		return isDeleted;
 	}
 	
 }

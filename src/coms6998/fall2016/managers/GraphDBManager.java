@@ -35,18 +35,21 @@ public interface GraphDBManager {
 	public Property getProperty(long id);
 	public DBReturnCode deleteProperty(Property property);
 	public DBReturnCode updateProperty(Property property);
+	public DBReturnCode addComments(Comment comment, Property property);
 	public Set<Comment> getComments(Property property);
 	
 	public DBReturnCode addFranchise(Franchise franchise);
 	public Franchise getFranchise(long id);
 	public DBReturnCode deleteFranchise(Franchise franchise);
 	public DBReturnCode updateFranchise(Franchise franchise);
+	public DBReturnCode addComments(Comment comment, Franchise franchise);
 	public Set<Comment> getComments(Franchise franchise);
 	
 	public DBReturnCode addSeries(Series series);
 	public Series getSeries(long id);
 	public DBReturnCode deleteSeries(Series series);
 	public DBReturnCode updateSeries(Series series);
+	public DBReturnCode addComments(Comment comment, Series series);
 	public Set<Comment> getComments(Series series);
 	
 	
@@ -54,5 +57,6 @@ public interface GraphDBManager {
 	public Episode getEpisode(long id);
 	public DBReturnCode deleteEpisode(Episode episode);
 	public DBReturnCode updateEpisode(Episode episode);
+	public DBReturnCode addComments(Comment comment, Episode episode);
 	public Set<Comment> getComments(Episode episode);
 }
