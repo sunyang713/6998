@@ -18,6 +18,10 @@ public class Customer {
 	
 	private String addressRef;
 	
+	private String fbUserId;
+	
+	private String fbAccessToken;
+	
 	private boolean isDeleted;
 
 	@DynamoDBHashKey(attributeName="Email")
@@ -74,6 +78,23 @@ public class Customer {
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
-
 	
+	@DynamoDBAttribute(attributeName="fbUserId")
+	public String getFbUserId() {
+		return fbUserId;
+	}
+
+	public void setFbUserId(String fbUserId) {
+		this.fbUserId = fbUserId;
+	}
+	
+	@DynamoDBAttribute(attributeName="fbAccessToken")
+	public String getFbAccessToken() {
+		return fbAccessToken;
+	}
+
+	public void setFbAccessToken(String fbAccessToken) {
+		this.fbAccessToken = fbAccessToken;
+	}
+
 }

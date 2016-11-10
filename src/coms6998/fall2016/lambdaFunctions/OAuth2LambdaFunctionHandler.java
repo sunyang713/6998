@@ -1,5 +1,6 @@
 package coms6998.fall2016.lambdaFunctions;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -11,8 +12,14 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import coms6998.fall2016.managers.FacebookConnector;
 import coms6998.fall2016.models.ErrorPayload;
+import coms6998.fall2016.models.Customer;
 
-public class OAuth2LambdaFunctionHandler implements RequestHandler<String, String> {
+//return Customer model with suggested fields from FB
+//in addition store FB user_id and access token into Customer DynamoDB
+//For exchanging short term access token w long term
+//: https://developers.facebook.com/docs/facebook-login/access-tokens/expiration-and-extension
+
+public class OAuth2LambdaFunctionHandler implements RequestHandler<String, Customer> {
 	
 	//TODO - put this in a NetworkRequestManager.java class
 	public static Map<String, String> getQueryParams(String url){
@@ -40,21 +47,32 @@ public class OAuth2LambdaFunctionHandler implements RequestHandler<String, Strin
 
 	}
 	
+	@Override
+	public Customer handleRequest(String input, Context context){
 	
-	public String handleRequest(String input, Context context){
-		
-		Map<String, String> params = getQueryParams(input);
-		String access_token = params.get("access_token");
+		String access_token = input;
 
-		
 		if (access_token != null) {
 			System.out.println("Parsing url for access token: " + access_token);
-			
-			return FacebookConnector.facebookRedirect2(access_token);
+			try {
+				Customer customer = FacebookConnector.facebookRedirect2(access_token);
+				if (customer == null){
+					ErrorPayload errorPayload = new ErrorPayload("Error", 500, context.getAwsRequestId(), "Unknown Internal Error");
+					throw new RuntimeException(errorPayload.toString());
+				}
+				return customer;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			ErrorPayload errorPayload = new ErrorPayload("NotFound", 404, context.getAwsRequestId(), "User declined FB Login.");
 			throw new RuntimeException(errorPayload.toString());
 		}
+		
+		//if fb returned an error
+		ErrorPayload errorPayload = new ErrorPayload("Error", 500, context.getAwsRequestId(), "Unknown Internal Error");
+		throw new RuntimeException(errorPayload.toString()); 
 	}
 
 }
