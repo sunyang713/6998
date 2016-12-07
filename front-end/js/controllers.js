@@ -1,6 +1,11 @@
 var cs6998Controllers = angular.module('cs6998Controllers', []);
 
-cs6998Controllers.controller('cs6998MainCtrl', function ($scope, Customers, Addresses, $mdDialog) {
+cs6998Controllers.controller('cs6998MainCtrl', function ($scope, $routeParams, Customers, Addresses, $mdDialog) {
+
+        console.log("firstName: " + $routeParams.firstName);
+        console.log("lastName: " + $routeParams.lastName);
+        console.log("fbUserId: " + $routeParams.fbUserId);
+        console.log("fbAccessToken: " + $routeParams.fbAccessToken);
 
         $scope.showCreateCustomer = function(ev) {
                 $mdDialog.show({
@@ -16,6 +21,26 @@ cs6998Controllers.controller('cs6998MainCtrl', function ($scope, Customers, Addr
                   fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
                 });
             };
+
+        if($routeParams.newUser === 'true') {
+            var newCustomer = {};
+            newCustomer.firstName = $routeParams.firstName;
+            newCustomer.lastName = $routeParams.lastName;
+            newCustomer.fbUserId = $routeParams.fbUserId;
+            newCustomer.fbAccessToken = $routeParams.fbAccessToken;
+
+            $mdDialog.show({
+                  controller: DialogController,
+                  templateUrl: 'dialog1.tmpl.html',
+                  parent: angular.element(document.body),
+                  locals: {
+                    mode: 'create',
+                    customer: newCustomer
+                  },
+                  clickOutsideToClose:false,
+                  fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                });
+        }
 
         function DialogController($scope, $mdDialog, Customers, Addresses, mode, customer) {
             $scope.customer = customer;
